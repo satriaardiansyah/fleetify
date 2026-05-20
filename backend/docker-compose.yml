@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  # ── MySQL 8.0 ───────────────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: maintenance_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_secret
+      MYSQL_DATABASE: maintenance_db
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_secret
+    ports:
+      - "3307:3306"
+    volumes:
+      # All *.sql files are executed in alphabetical order on first run
+      - ./db:/docker-entrypoint-initdb.d:ro
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-proot_secret",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ── Go Application ──────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: maintenance_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy # wait until MySQL is accepting connections
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: maintenance_db
+      DB_USER: app_user
+      DB_PASSWORD: app_secret
+      APP_PORT: 8080
+      TZ: Asia/Jakarta
+    ports:
+      - "8081:8080"
+
+volumes:
+  db_data:
