@@ -51,6 +51,7 @@ services:
       DB_USER: app_user
       DB_PASSWORD: app_secret
       APP_PORT: 8080
+      WEBHOOK_URL: https://webhook.site/84f97264-3667-4ddc-81ea-ecb48f6bac53
       TZ: Asia/Jakarta
     ports:
       - "8081:8080"
