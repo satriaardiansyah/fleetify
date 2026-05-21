@@ -1,0 +1,1928 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fleetify</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0f0f0f;
+        --paper: #f5f2ec;
+        --paper2: #ede9e0;
+        --paper3: #e5e0d5;
+        --accent: #d4501a;
+        --accent2: #1a4fd4;
+        --muted: #7a7267;
+        --border: #d8d3c8;
+        --ok: #1a7a4a;
+        --warn: #b87c0a;
+        --card: #faf8f4;
+        --sidebar-w: 240px;
+        --mono: "DM Mono", monospace;
+        --sans: "DM Sans", sans-serif;
+        --disp: "Syne", sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: var(--sans);
+        background: var(--paper);
+        color: var(--ink);
+        margin: 0;
+        min-height: 100vh;
+        font-size: 14px;
+      }
+
+      /* ── TOPBAR ── */
+      #topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 52px;
+        z-index: 200;
+        background: var(--ink);
+        border-bottom: 3px solid var(--accent);
+        display: flex;
+        align-items: center;
+        padding: 0 1.25rem;
+        gap: 1rem;
+      }
+      .brand {
+        font-family: var(--disp);
+        font-weight: 800;
+        font-size: 1.15rem;
+        color: #fff;
+        text-decoration: none;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+      }
+      .brand span {
+        color: var(--accent);
+      }
+      #topbar-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      #topbar label {
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+      }
+      #user-select {
+        background: #1e1e1e;
+        border: 1px solid #333;
+        color: #fff;
+        border-radius: 6px;
+        padding: 0.28rem 0.7rem;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        cursor: pointer;
+      }
+      #user-select:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .role-badge {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        font-weight: 500;
+        padding: 0.18rem 0.55rem;
+        border-radius: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .role-sa {
+        background: var(--accent);
+        color: #fff;
+      }
+      .role-approval {
+        background: var(--accent2);
+        color: #fff;
+      }
+
+      /* ── SIDEBAR ── */
+      #sidebar {
+        position: fixed;
+        top: 52px;
+        left: 0;
+        bottom: 0;
+        width: var(--sidebar-w);
+        background: var(--ink);
+        z-index: 150;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #1e1e1e;
+        overflow-y: auto;
+      }
+      #sidebar-header {
+        padding: 1.25rem 1.25rem 0.5rem;
+        border-bottom: 1px solid #1e1e1e;
+      }
+      #sidebar-header p {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0;
+      }
+      #sidebar-user {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 0.5rem;
+      }
+      #sidebar-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--disp);
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      #sidebar-username {
+        font-family: var(--sans);
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #fff;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .nav-section {
+        padding: 0.75rem 0 0.25rem;
+        border-bottom: 1px solid #1e1e1e;
+      }
+      .nav-section-label {
+        font-family: var(--mono);
+        font-size: 0.58rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #444;
+        padding: 0 1.25rem;
+        margin-bottom: 0.25rem;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.6rem 1.25rem;
+        cursor: pointer;
+        color: #aaa;
+        font-size: 0.82rem;
+        font-weight: 400;
+        transition:
+          background 0.12s,
+          color 0.12s;
+        border-left: 3px solid transparent;
+        user-select: none;
+      }
+      .nav-item i {
+        font-size: 0.95rem;
+        width: 18px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .nav-item:hover {
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .nav-item.active {
+        background: #1a1a1a;
+        color: #fff;
+        border-left-color: var(--accent);
+      }
+      .nav-item.disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+      #sidebar-footer {
+        margin-top: auto;
+        padding: 1rem 1.25rem;
+        border-top: 1px solid #1e1e1e;
+      }
+      #sidebar-footer p {
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        color: #333;
+        margin: 0;
+      }
+
+      /* ── MAIN CONTENT ── */
+      #main {
+        margin-left: var(--sidebar-w);
+        padding-top: 52px;
+        min-height: 100vh;
+      }
+      .view {
+        display: none;
+        padding: 2rem;
+      }
+      .view.active {
+        display: block;
+      }
+
+      /* ── PAGE HEADER ── */
+      .page-label {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        margin-bottom: 0.3rem;
+      }
+      .page-title {
+        font-family: var(--disp);
+        font-weight: 800;
+        font-size: 1.55rem;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+      }
+      .page-title span {
+        color: var(--accent);
+      }
+
+      /* ── CARDS ── */
+      .card-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.4rem;
+        margin-bottom: 1.25rem;
+      }
+      .card-box-title {
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin-bottom: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      /* ── FORM ── */
+      .form-label {
+        font-family: var(--mono);
+        font-size: 0.67rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--muted);
+        margin-bottom: 0.35rem;
+      }
+      .form-control,
+      .form-select {
+        background: var(--paper);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 0.88rem;
+        transition: border-color 0.15s;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        background: #fff;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(212, 80, 26, 0.1);
+        color: var(--ink);
+      }
+      textarea.form-control {
+        resize: vertical;
+      }
+
+      /* ── BUTTONS ── */
+      .btn-accent {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 0.52rem 1.35rem;
+        font-family: var(--disp);
+        font-weight: 700;
+        font-size: 0.82rem;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          transform 0.1s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .btn-accent:hover {
+        background: #b83f10;
+      }
+      .btn-accent:active {
+        transform: scale(0.97);
+      }
+      .btn-accent:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-ok {
+        background: var(--ok);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 0.32rem 0.85rem;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        cursor: pointer;
+        transition: background 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .btn-ok:hover {
+        background: #145e38;
+      }
+      .btn-ok:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--accent);
+        border: 1.5px solid var(--accent);
+        border-radius: 6px;
+        padding: 0.38rem 0.95rem;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .btn-outline:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-ghost {
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 0.95rem;
+        padding: 0;
+        transition: color 0.15s;
+        line-height: 1;
+      }
+      .btn-ghost:hover {
+        color: var(--accent);
+      }
+
+      /* ── FILE UPLOAD ── */
+      .upload-zone {
+        border: 2px dashed var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+        position: relative;
+        overflow: hidden;
+      }
+      .upload-zone:hover {
+        border-color: var(--accent);
+        background: rgba(212, 80, 26, 0.03);
+      }
+      .upload-zone input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+      .upload-zone i {
+        font-size: 1.75rem;
+        color: var(--border);
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+      .upload-zone p {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      .upload-zone.has-file {
+        border-color: var(--ok);
+        background: rgba(26, 122, 74, 0.04);
+      }
+      .upload-preview {
+        width: 100%;
+        max-height: 180px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        display: none;
+        margin-top: 0.75rem;
+      }
+
+      /* ── ITEM ROWS ── */
+      .item-row {
+        display: grid;
+        grid-template-columns: 1fr 100px 36px;
+        gap: 0.5rem;
+        align-items: center;
+        padding: 0.45rem 0;
+        border-bottom: 1px dashed var(--border);
+      }
+      .item-row:last-child {
+        border-bottom: none;
+      }
+
+      /* ── BADGES ── */
+      .status-badge {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        font-weight: 500;
+        padding: 0.18rem 0.52rem;
+        border-radius: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+      }
+      .s-PENDING {
+        background: #fff3cd;
+        color: var(--warn);
+        border: 1px solid #fce08a;
+      }
+      .s-APPROVED {
+        background: #d1f0e0;
+        color: var(--ok);
+        border: 1px solid #9adcbc;
+      }
+      .s-DONE {
+        background: #dce8ff;
+        color: var(--accent2);
+        border: 1px solid #a3bfff;
+      }
+      .s-REJECTED {
+        background: #fde8e8;
+        color: #b91c1c;
+        border: 1px solid #fca5a5;
+      }
+
+      /* ── TABLE ── */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .data-table thead tr {
+        background: var(--ink);
+        color: #fff;
+      }
+      .data-table thead th {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0.6rem 1rem;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+      .data-table tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background 0.1s;
+      }
+      .data-table tbody tr:hover {
+        background: var(--paper2);
+      }
+      .data-table tbody td {
+        padding: 0.7rem 1rem;
+        font-size: 0.83rem;
+        vertical-align: middle;
+      }
+      td.mono {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      /* ── REPORT CARD (approval) ── */
+      .rcard {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.2rem 1.4rem;
+        margin-bottom: 1rem;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 1rem;
+        align-items: start;
+        transition: box-shadow 0.15s;
+      }
+      .rcard:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+      }
+      .rcard-meta {
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        color: var(--muted);
+        margin-bottom: 0.35rem;
+      }
+      .rcard-title {
+        font-family: var(--disp);
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin-bottom: 0.45rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .plate {
+        font-family: var(--mono);
+        background: var(--ink);
+        color: #fff;
+        padding: 0.1rem 0.48rem;
+        border-radius: 3px;
+        font-size: 0.82rem;
+      }
+      .rcard-items {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .rcard-item-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.18rem 0;
+        border-bottom: 1px dashed var(--border);
+      }
+      .rcard-item-row:last-child {
+        border-bottom: none;
+      }
+      .rcard-total {
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--accent);
+        margin-top: 0.5rem;
+      }
+      .rcard-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.5rem;
+      }
+
+      /* ── COMPLETE MODAL ── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 500;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .modal-overlay.open {
+        display: flex;
+      }
+      .modal-box {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 1.75rem;
+        width: 100%;
+        max-width: 480px;
+        border: 1px solid var(--border);
+      }
+      .modal-title {
+        font-family: var(--disp);
+        font-weight: 800;
+        font-size: 1.15rem;
+        margin-bottom: 1.25rem;
+      }
+
+      /* ── TOAST ── */
+      #toast-wrap {
+        position: fixed;
+        bottom: 1.25rem;
+        right: 1.25rem;
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      .toast-item {
+        background: var(--ink);
+        color: #fff;
+        padding: 0.7rem 1.15rem;
+        border-radius: 8px;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        border-left: 4px solid var(--accent);
+        animation: tIn 0.22s ease;
+        max-width: 300px;
+      }
+      .toast-item.ok {
+        border-left-color: var(--ok);
+      }
+      .toast-item.err {
+        border-left-color: #dc2626;
+      }
+      @keyframes tIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── MISC ── */
+      .empty-state {
+        text-align: center;
+        padding: 2.5rem 1rem;
+        color: var(--muted);
+      }
+      .empty-state i {
+        font-size: 2.2rem;
+        display: block;
+        margin-bottom: 0.6rem;
+      }
+      .empty-state p {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        margin: 0;
+      }
+      .spin {
+        width: 13px;
+        height: 13px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        display: inline-block;
+        animation: sp 0.6s linear infinite;
+        vertical-align: middle;
+        margin-right: 5px;
+      }
+      @keyframes sp {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .mono {
+        font-family: var(--mono);
+      }
+      hr.div {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 1rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- TOPBAR -->
+    <header id="topbar">
+      <a class="brand" href="#"><span>Fleetify</span></a>
+      <div id="topbar-right">
+        <label for="user-select"
+          ><i class="bi bi-person-fill"></i> Login sebagai</label
+        >
+        <select id="user-select">
+          <option value="">-- Pilih User --</option>
+        </select>
+        <span id="role-badge" class="role-badge" style="display: none"></span>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <div id="sidebar-header">
+        <p>Pengguna Aktif</p>
+        <div id="sidebar-user">
+          <div id="sidebar-avatar">?</div>
+          <div id="sidebar-username" style="color: #555">Belum login</div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-label">Laporan</div>
+        <div class="nav-item active" data-view="view-history">
+          <i class="bi bi-clock-history"></i> Riwayat Laporan
+        </div>
+        <div
+          class="nav-item disabled"
+          id="nav-form"
+          data-view="view-form"
+          data-role="SA"
+        >
+          <i class="bi bi-plus-circle"></i> Buat Laporan
+        </div>
+        <div
+          class="nav-item disabled"
+          id="nav-complete"
+          data-view="view-complete"
+          data-role="SA"
+        >
+          <i class="bi bi-check2-square"></i> Selesaikan Laporan
+        </div>
+        <div
+          class="nav-item disabled"
+          id="nav-approval"
+          data-view="view-approval"
+          data-role="APPROVAL"
+        >
+          <i class="bi bi-shield-check"></i> Review Approval
+        </div>
+      </div>
+
+      <div id="sidebar-footer">
+        <p>Fleetify v1.0</p>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main id="main">
+      <!-- F-04: Riwayat -->
+      <section class="view active" id="view-history">
+        <div class="page-label">F-04</div>
+        <h1 class="page-title">Riwayat <span>Laporan</span></h1>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span
+            id="history-count"
+            class="mono"
+            style="font-size: 0.75rem; color: var(--muted)"
+          ></span>
+          <button class="btn-outline" id="btn-refresh-history">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+        </div>
+        <div class="card-box" style="padding: 0; overflow: hidden">
+          <div style="overflow-x: auto">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nama SA</th>
+                  <th>No. Polisi</th>
+                  <th>Odometer</th>
+                  <th>Keluhan</th>
+                  <th>Total Estimasi</th>
+                  <th>Status</th>
+                  <th>Tanggal</th>
+                  <th>Foto Laporan</th>
+                  <th>Foto Bukti</th>
+                </tr>
+              </thead>
+              <tbody id="history-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- F-01: Buat Laporan -->
+      <section class="view" id="view-form">
+        <div class="page-label">F-01 · SA</div>
+        <h1 class="page-title">Buat <span>Laporan</span> Baru</h1>
+        <form id="form-report" novalidate>
+          <div class="row g-3">
+            <div class="col-lg-6">
+              <div class="card-box">
+                <div class="card-box-title">
+                  <i class="bi bi-car-front"></i> Data Kendaraan
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Kendaraan</label>
+                  <select class="form-select" id="inp-vehicle" required>
+                    <option value="">Memuat kendaraan...</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Odometer (km)</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="inp-odometer"
+                    placeholder="contoh: 52000"
+                    min="0"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="form-label">Keluhan</label>
+                  <textarea
+                    class="form-control"
+                    id="inp-complaint"
+                    rows="3"
+                    placeholder="Deskripsikan keluhan kendaraan..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card-box">
+                <div class="card-box-title">
+                  <i class="bi bi-camera"></i> Foto Kondisi Awal
+                </div>
+                <label class="form-label">Upload Foto</label>
+                <div class="upload-zone" id="upload-zone-initial">
+                  <input type="file" id="inp-photo-file" accept="image/*" />
+                  <i class="bi bi-cloud-arrow-up"></i>
+                  <p>
+                    Klik atau drag foto ke sini<br /><span
+                      style="color: var(--border)"
+                      >JPG, PNG, WEBP maks 5MB</span
+                    >
+                  </p>
+                </div>
+                <img
+                  id="preview-initial"
+                  class="upload-preview"
+                  alt="preview foto awal"
+                />
+                <div
+                  id="upload-initial-name"
+                  style="
+                    font-family: var(--mono);
+                    font-size: 0.7rem;
+                    color: var(--ok);
+                    margin-top: 0.4rem;
+                    display: none;
+                  "
+                ></div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="card-box">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-3"
+                >
+                  <div class="card-box-title mb-0">
+                    <i class="bi bi-list-check"></i> Estimasi Part & Jasa
+                  </div>
+                  <button type="button" class="btn-outline" id="btn-add-item">
+                    <i class="bi bi-plus"></i> Tambah Item
+                  </button>
+                </div>
+                <div id="items-container"></div>
+                <div
+                  id="items-empty"
+                  class="empty-state"
+                  style="padding: 1.25rem 0"
+                >
+                  <i class="bi bi-box-seam" style="font-size: 1.4rem"></i>
+                  <p>Belum ada item. Klik "+ Tambah Item".</p>
+                </div>
+                <hr class="div" id="items-divider" style="display: none" />
+                <div
+                  class="d-flex justify-content-end"
+                  id="total-wrap"
+                  style="display: none"
+                >
+                  <span
+                    class="mono"
+                    style="font-size: 0.78rem; color: var(--muted)"
+                    >Estimasi Total:&nbsp;</span
+                  >
+                  <span
+                    class="mono"
+                    id="form-total"
+                    style="font-size: 0.78rem; font-weight: 600"
+                  ></span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+              <button type="submit" class="btn-accent" id="btn-submit">
+                <i class="bi bi-send"></i> Kirim Laporan
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- F-03: Selesaikan Laporan -->
+      <section class="view" id="view-complete">
+        <div class="page-label">F-03 · SA</div>
+        <h1 class="page-title">Selesaikan <span>Laporan</span></h1>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span
+            id="complete-count"
+            class="mono"
+            style="font-size: 0.75rem; color: var(--muted)"
+          ></span>
+          <button class="btn-outline" id="btn-refresh-complete">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+        </div>
+        <div id="complete-list"></div>
+      </section>
+
+      <!-- F-02: Review Approval -->
+      <section class="view" id="view-approval">
+        <div class="page-label">F-02 · APPROVAL</div>
+        <h1 class="page-title">Review <span>Approval</span></h1>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span
+            id="approval-count"
+            class="mono"
+            style="font-size: 0.75rem; color: var(--muted)"
+          ></span>
+          <button class="btn-outline" id="btn-refresh-approval">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+        </div>
+        <div id="approval-list"></div>
+      </section>
+    </main>
+
+    <!-- MODAL: Complete Report -->
+    <div class="modal-overlay" id="modal-complete">
+      <div class="modal-box">
+        <div class="modal-title">Upload Foto Bukti Pengerjaan</div>
+        <input type="hidden" id="modal-report-id" />
+        <div class="mb-3">
+          <label class="form-label">Laporan</label>
+          <div
+            id="modal-report-info"
+            class="mono"
+            style="font-size: 0.78rem; color: var(--muted)"
+          ></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Foto Bukti</label>
+          <div class="upload-zone" id="upload-zone-proof">
+            <input type="file" id="inp-proof-file" accept="image/*" />
+            <i class="bi bi-cloud-arrow-up"></i>
+            <p>Klik atau drag foto bukti pengerjaan</p>
+          </div>
+          <img id="preview-proof" class="upload-preview" alt="preview bukti" />
+          <div
+            id="upload-proof-name"
+            style="
+              font-family: var(--mono);
+              font-size: 0.7rem;
+              color: var(--ok);
+              margin-top: 0.4rem;
+              display: none;
+            "
+          ></div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end mt-3">
+          <button class="btn-outline" id="btn-modal-cancel">Batal</button>
+          <button class="btn-accent" id="btn-modal-submit">
+            <i class="bi bi-check2"></i> Selesaikan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-wrap"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // ═══════════════════════════════════════════════════════
+      // CONFIG
+      // ═══════════════════════════════════════════════════════
+      const API = "http://localhost:8081/api";
+
+      // ═══════════════════════════════════════════════════════
+      // STATE
+      // ═══════════════════════════════════════════════════════
+      const S = {
+        user: null,
+        users: [],
+        vehicles: [],
+        masterItems: [],
+        formItems: [], // [{itemId, qty}]
+      };
+
+      // ═══════════════════════════════════════════════════════
+      // UTILS
+      // ═══════════════════════════════════════════════════════
+      function toast(msg, type = "info") {
+        const el = document.createElement("div");
+        el.className = `toast-item ${type === "success" ? "ok" : type === "error" ? "err" : ""}`;
+        el.textContent = msg;
+        document.getElementById("toast-wrap").appendChild(el);
+        setTimeout(() => el.remove(), 3500);
+      }
+
+      const rp = (n) => "Rp " + Number(n).toLocaleString("id-ID");
+
+      function fmtDate(iso) {
+        if (!iso) return "-";
+        return new Date(iso).toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      // Convert file to base64 data URL
+      function fileToDataURL(file) {
+        return new Promise((res, rej) => {
+          const r = new FileReader();
+          r.onload = () => res(r.result);
+          r.onerror = rej;
+          r.readAsDataURL(file);
+        });
+      }
+
+      async function api(path, opts = {}) {
+        if (!S.user) {
+          toast("Pilih user terlebih dahulu.", "error");
+          throw new Error("no user");
+        }
+        const res = await fetch(API + path, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-ID": String(S.user.id),
+            ...(opts.headers || {}),
+          },
+          ...opts,
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || "API error");
+        return data;
+      }
+
+      // ═══════════════════════════════════════════════════════
+      // SIDEBAR & VIEW
+      // ═══════════════════════════════════════════════════════
+      function switchView(id) {
+        document
+          .querySelectorAll(".view")
+          .forEach((v) => v.classList.remove("active"));
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((n) => n.classList.remove("active"));
+        const v = document.getElementById(id);
+        if (v) v.classList.add("active");
+        const n = document.querySelector(`.nav-item[data-view="${id}"]`);
+        if (n) n.classList.add("active");
+      }
+
+      document.querySelectorAll(".nav-item").forEach((n) => {
+        n.addEventListener("click", () => {
+          if (n.classList.contains("disabled")) return;
+          const vid = n.dataset.view;
+          switchView(vid);
+          if (vid === "view-history") loadHistory();
+          if (vid === "view-approval") loadApproval();
+          if (vid === "view-complete") loadComplete();
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════
+      // USER SWITCHER — data dari API
+      // ═══════════════════════════════════════════════════════
+      async function loadUsers() {
+        // Gunakan user id 1 sebagai bootstrap untuk ambil data users
+        const tempUser = { id: 1 };
+        try {
+          const res = await fetch(API + "/users", {
+            headers: { "Content-Type": "application/json", "X-User-ID": "1" },
+          });
+          const data = await res.json();
+          if (!data.success) return;
+          S.users = data.data || [];
+          populateUserSelect();
+        } catch (e) {
+          // fallback hardcoded
+          S.users = [
+            { id: 1, username: "admin_sa", role: "SA" },
+            { id: 2, username: "budi_approval", role: "APPROVAL" },
+          ];
+          populateUserSelect();
+        }
+      }
+
+      function populateUserSelect() {
+        const sel = document.getElementById("user-select");
+        while (sel.options.length > 1) sel.remove(1);
+        S.users.forEach((u) => {
+          const o = document.createElement("option");
+          o.value = u.id;
+          o.textContent = `${u.username} (${u.role})`;
+          sel.appendChild(o);
+        });
+      }
+
+      document
+        .getElementById("user-select")
+        .addEventListener("change", function () {
+          const uid = parseInt(this.value);
+          S.user = S.users.find((u) => u.id === uid) || null;
+          updateSidebar();
+          if (S.user) loadMasterData();
+        });
+
+      function updateSidebar() {
+        const u = S.user;
+        const badge = document.getElementById("role-badge");
+        const avatar = document.getElementById("sidebar-avatar");
+        const uname = document.getElementById("sidebar-username");
+
+        // Reset semua nav-item ke disabled dulu
+        document.querySelectorAll(".nav-item[data-role]").forEach((n) => {
+          n.classList.add("disabled");
+          n.classList.remove("active");
+        });
+
+        if (!u) {
+          badge.style.display = "none";
+          avatar.textContent = "?";
+          avatar.style.background = "#333";
+          uname.textContent = "Belum login";
+          uname.style.color = "#555";
+          switchView("view-history");
+          return;
+        }
+
+        // Badge di topbar
+        badge.style.display = "inline";
+        badge.textContent = u.role;
+        badge.className = `role-badge role-${u.role.toLowerCase()}`;
+
+        // Sidebar user info
+        avatar.textContent = u.username[0].toUpperCase();
+        avatar.style.background =
+          u.role === "SA" ? "var(--accent)" : "var(--accent2)";
+        uname.textContent = u.username;
+        uname.style.color = "#fff";
+
+        // Aktifkan nav sesuai role
+        document
+          .querySelectorAll(`.nav-item[data-role="${u.role}"]`)
+          .forEach((n) => {
+            n.classList.remove("disabled");
+          });
+
+        // Auto-navigate
+        if (u.role === "SA") {
+          switchView("view-form");
+        } else {
+          switchView("view-approval");
+          loadApproval();
+        }
+        loadHistory();
+      }
+
+      // ═══════════════════════════════════════════════════════
+      // MASTER DATA: vehicles & items dari API
+      // ═══════════════════════════════════════════════════════
+      async function loadMasterData() {
+        await Promise.allSettled([loadVehicles(), loadMasterItems()]);
+      }
+
+      async function loadVehicles() {
+        try {
+          const d = await api("/vehicles");
+          S.vehicles = d.data || [];
+          const sel = document.getElementById("inp-vehicle");
+          while (sel.options.length > 1) sel.remove(1);
+          S.vehicles.forEach((v) => {
+            const o = document.createElement("option");
+            o.value = v.id;
+            o.textContent = `${v.license_plate} — ${v.model}`;
+            sel.appendChild(o);
+          });
+          if (S.vehicles.length === 0) {
+            const o = document.createElement("option");
+            o.disabled = true;
+            o.textContent = "Tidak ada kendaraan";
+            sel.appendChild(o);
+          }
+        } catch (e) {
+          console.error("vehicles:", e);
+        }
+      }
+
+      async function loadMasterItems() {
+        try {
+          const d = await api("/master-items");
+          S.masterItems = d.data || [];
+          renderItemRows(); // re-render jika ada item yang sudah ditambahkan
+        } catch (e) {
+          console.error("master-items:", e);
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════
+      // FILE UPLOAD HELPERS
+      // ═══════════════════════════════════════════════════════
+      function setupUploadZone(zoneId, fileInputId, previewId, nameId) {
+        const input = document.getElementById(fileInputId);
+        const preview = document.getElementById(previewId);
+        const nameEl = document.getElementById(nameId);
+        const zone = document.getElementById(zoneId);
+
+        input.addEventListener("change", async function () {
+          const file = this.files[0];
+          if (!file) return;
+          if (file.size > 5 * 1024 * 1024) {
+            toast("Ukuran file maksimal 5MB", "error");
+            this.value = "";
+            return;
+          }
+          const url = await fileToDataURL(file);
+          preview.src = url;
+          preview.style.display = "block";
+          zone.classList.add("has-file");
+          nameEl.textContent = `✓ ${file.name}`;
+          nameEl.style.display = "block";
+        });
+      }
+
+      setupUploadZone(
+        "upload-zone-initial",
+        "inp-photo-file",
+        "preview-initial",
+        "upload-initial-name",
+      );
+      setupUploadZone(
+        "upload-zone-proof",
+        "inp-proof-file",
+        "preview-proof",
+        "upload-proof-name",
+      );
+
+      // ═══════════════════════════════════════════════════════
+      // F-04: HISTORY
+      // ═══════════════════════════════════════════════════════
+      document
+        .getElementById("btn-refresh-history")
+        .addEventListener("click", loadHistory);
+
+      async function loadHistory() {
+        const tbody = document.getElementById("history-tbody");
+        setLoading(tbody, 8, "Memuat data...");
+        try {
+          const d = await api("/reports");
+          const reports = d.data || [];
+          document.getElementById("history-count").textContent =
+            `${reports.length} laporan`;
+          tbody.innerHTML = "";
+          if (reports.length === 0) {
+            setEmpty(tbody, 8, "Belum ada laporan");
+            return;
+          }
+          const frag = document.createDocumentFragment();
+          reports.forEach((r) => {
+            const tr = document.createElement("tr");
+            const cells = [
+              // #ID
+              mkTd("#" + r.id, "mono"),
+              // SA
+              mkTd(r.creator ? r.creator.username : "—"),
+              // Plat
+              (() => {
+                const td = document.createElement("td");
+                const sp = document.createElement("span");
+                sp.style.cssText =
+                  "font-family:var(--mono);font-size:.75rem;background:var(--ink);color:#fff;padding:.12rem .45rem;border-radius:3px";
+                sp.textContent = r.vehicle ? r.vehicle.license_plate : "—";
+                td.appendChild(sp);
+                return td;
+              })(),
+              // Odometer
+              mkTd(Number(r.odometer).toLocaleString("id-ID") + " km", "mono"),
+              // Keluhan
+              (() => {
+                const td = document.createElement("td");
+                td.style.maxWidth = "160px";
+                td.style.overflow = "hidden";
+                td.style.textOverflow = "ellipsis";
+                td.style.whiteSpace = "nowrap";
+                td.title = r.complaint || "";
+                td.textContent = r.complaint || "—";
+                return td;
+              })(),
+              // Total
+              (() => {
+                const total = (r.report_items || []).reduce(
+                  (s, i) => s + i.price_snapshot * i.quantity,
+                  0,
+                );
+                return mkTd(total > 0 ? rp(total) : "—", "mono");
+              })(),
+              // Status
+              (() => {
+                const td = document.createElement("td");
+                const sp = document.createElement("span");
+                sp.className = `status-badge s-${r.status}`;
+                sp.textContent = r.status;
+                td.appendChild(sp);
+                return td;
+              })(),
+              // Tanggal
+              mkTd(fmtDate(r.created_at), "mono"),
+
+              // Foto
+              // Foto Awal
+              (() => {
+                const td = document.createElement("td");
+
+                if (r.initial_photo) {
+                  const img = document.createElement("img");
+
+                  img.src = r.initial_photo;
+                  img.style.width = "60px";
+                  img.style.height = "40px";
+                  img.style.objectFit = "cover";
+                  img.style.borderRadius = "4px";
+
+                  td.appendChild(img);
+                } else {
+                  td.textContent = "—";
+                  td.style.color = "var(--muted)";
+                }
+
+                return td;
+              })(),
+
+              // Foto Bukti
+              (() => {
+                const td = document.createElement("td");
+
+                if (r.proof_photo) {
+                  const img = document.createElement("img");
+
+                  img.src = r.proof_photo;
+                  img.style.width = "60px";
+                  img.style.height = "40px";
+                  img.style.objectFit = "cover";
+                  img.style.borderRadius = "4px";
+
+                  td.appendChild(img);
+                } else {
+                  td.textContent = "—";
+                  td.style.color = "var(--muted)";
+                }
+
+                return td;
+              })(),
+            ];
+            cells.forEach((c) => tr.appendChild(c));
+            frag.appendChild(tr);
+          });
+          tbody.appendChild(frag);
+        } catch (e) {
+          tbody.innerHTML = "";
+          setError(tbody, 8, e.message);
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════
+      // F-01: FORM BUAT LAPORAN
+      // ═══════════════════════════════════════════════════════
+      document.getElementById("btn-add-item").addEventListener("click", () => {
+        S.formItems.push({ itemId: "", qty: 1 });
+        renderItemRows();
+      });
+
+      function renderItemRows() {
+        const container = document.getElementById("items-container");
+        const empty = document.getElementById("items-empty");
+        const divider = document.getElementById("items-divider");
+        const totalWrap = document.getElementById("total-wrap");
+        container.innerHTML = "";
+
+        if (S.formItems.length === 0) {
+          empty.style.display = "block";
+          divider.style.display = "none";
+          totalWrap.style.display = "none";
+          return;
+        }
+        empty.style.display = "none";
+        divider.style.display = "block";
+        totalWrap.style.display = "flex";
+
+        const frag = document.createDocumentFragment();
+        S.formItems.forEach((item, idx) => {
+          const row = document.createElement("div");
+          row.className = "item-row";
+
+          // Select master item
+          const sel = document.createElement("select");
+          sel.className = "form-select form-select-sm";
+          const def = document.createElement("option");
+          def.value = "";
+          def.textContent = S.masterItems.length
+            ? "Pilih part / jasa..."
+            : "Memuat item...";
+          sel.appendChild(def);
+          S.masterItems.forEach((m) => {
+            const o = document.createElement("option");
+            o.value = m.id;
+            o.textContent = `[${m.type}] ${m.item_name} — ${rp(m.price)}`;
+            if (String(m.id) === String(item.itemId)) o.selected = true;
+            sel.appendChild(o);
+          });
+          sel.addEventListener("change", () => {
+            S.formItems[idx].itemId = sel.value;
+            calcTotal();
+          });
+
+          // Qty
+          const qty = document.createElement("input");
+          qty.type = "number";
+          qty.className = "form-control form-control-sm";
+          qty.placeholder = "Qty";
+          qty.value = item.qty;
+          qty.min = 1;
+          qty.addEventListener("input", () => {
+            S.formItems[idx].qty = parseInt(qty.value) || 1;
+            calcTotal();
+          });
+
+          // Remove
+          const rm = document.createElement("button");
+          rm.type = "button";
+          rm.className = "btn-ghost";
+          rm.innerHTML = '<i class="bi bi-x-circle"></i>';
+          rm.addEventListener("click", () => {
+            S.formItems.splice(idx, 1);
+            renderItemRows();
+          });
+
+          row.appendChild(sel);
+          row.appendChild(qty);
+          row.appendChild(rm);
+          frag.appendChild(row);
+        });
+        container.appendChild(frag);
+        calcTotal();
+      }
+
+      function calcTotal() {
+        let t = 0;
+        S.formItems.forEach((i) => {
+          const m = S.masterItems.find(
+            (x) => String(x.id) === String(i.itemId),
+          );
+          if (m) t += m.price * (i.qty || 1);
+        });
+        document.getElementById("form-total").textContent = t > 0 ? rp(t) : "—";
+      }
+
+      document
+        .getElementById("form-report")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const vehicleId = parseInt(
+            document.getElementById("inp-vehicle").value,
+          );
+          const odometer = parseInt(
+            document.getElementById("inp-odometer").value,
+          );
+          const complaint = document
+            .getElementById("inp-complaint")
+            .value.trim();
+          const photoFile = document.getElementById("inp-photo-file").files[0];
+
+          if (!vehicleId) {
+            toast("Pilih kendaraan terlebih dahulu.", "error");
+            return;
+          }
+          if (!odometer || odometer < 0) {
+            toast("Odometer tidak valid.", "error");
+            return;
+          }
+          const valid = S.formItems.filter((i) => i.itemId && i.qty >= 1);
+          if (valid.length === 0) {
+            toast("Tambahkan minimal satu item.", "error");
+            return;
+          }
+
+          const btn = document.getElementById("btn-submit");
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spin"></span> Mengirim...';
+
+          try {
+            // Konversi foto ke base64 jika ada (simulasi upload)
+            let photoData = "";
+            if (photoFile) photoData = await fileToDataURL(photoFile);
+
+            await api("/reports", {
+              method: "POST",
+              body: JSON.stringify({
+                vehicle_id: vehicleId,
+                odometer: odometer,
+                complaint: complaint,
+                initial_photo: photoData || "",
+                items: valid.map((i) => ({
+                  item_id: parseInt(i.itemId),
+                  quantity: parseInt(i.qty),
+                })),
+              }),
+            });
+
+            toast("Laporan berhasil dibuat!", "success");
+
+            // Reset
+            document.getElementById("form-report").reset();
+            document.getElementById("preview-initial").style.display = "none";
+            document.getElementById("upload-initial-name").style.display =
+              "none";
+            document
+              .getElementById("upload-zone-initial")
+              .classList.remove("has-file");
+            S.formItems = [];
+            renderItemRows();
+
+            switchView("view-history");
+            loadHistory();
+          } catch (err) {
+            toast("Gagal: " + err.message, "error");
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-send"></i> Kirim Laporan';
+          }
+        });
+
+      // ═══════════════════════════════════════════════════════
+      // F-03: SELESAIKAN LAPORAN (SA - status APPROVED)
+      // ═══════════════════════════════════════════════════════
+      document
+        .getElementById("btn-refresh-complete")
+        .addEventListener("click", loadComplete);
+
+      async function loadComplete() {
+        const list = document.getElementById("complete-list");
+        list.innerHTML = "";
+        showListLoading(list, "Memuat laporan disetujui...");
+        try {
+          const d = await api("/reports");
+          const approved = (d.data || []).filter(
+            (r) => r.status === "APPROVED",
+          );
+          document.getElementById("complete-count").textContent =
+            `${approved.length} laporan siap diselesaikan`;
+          list.innerHTML = "";
+          if (approved.length === 0) {
+            showEmpty(
+              list,
+              "bi-check-circle",
+              "Tidak ada laporan yang perlu diselesaikan",
+            );
+            return;
+          }
+          const frag = document.createDocumentFragment();
+          approved.forEach((r) => {
+            frag.appendChild(buildReportCard(r, "complete"));
+          });
+          list.appendChild(frag);
+        } catch (e) {
+          list.innerHTML = "";
+          showError(list, e.message);
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════
+      // F-02: APPROVAL
+      // ═══════════════════════════════════════════════════════
+      document
+        .getElementById("btn-refresh-approval")
+        .addEventListener("click", loadApproval);
+
+      async function loadApproval() {
+        const list = document.getElementById("approval-list");
+        list.innerHTML = "";
+        showListLoading(list, "Memuat laporan pending...");
+        try {
+          const d = await api("/reports");
+          const pending = (d.data || []).filter((r) => r.status === "PENDING");
+          document.getElementById("approval-count").textContent =
+            `${pending.length} laporan menunggu persetujuan`;
+          list.innerHTML = "";
+          if (pending.length === 0) {
+            showEmpty(
+              list,
+              "bi-check-circle",
+              "Tidak ada laporan yang perlu direview",
+            );
+            return;
+          }
+          const frag = document.createDocumentFragment();
+          pending.forEach((r) => {
+            frag.appendChild(buildReportCard(r, "approve"));
+          });
+          list.appendChild(frag);
+        } catch (e) {
+          list.innerHTML = "";
+          showError(list, e.message);
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════
+      // REPORT CARD (shared for approve & complete)
+      // ═══════════════════════════════════════════════════════
+      function buildReportCard(r, mode) {
+        const card = document.createElement("div");
+        card.className = "rcard";
+        card.dataset.reportId = r.id;
+
+        // Left
+        const left = document.createElement("div");
+
+        const meta = document.createElement("div");
+        meta.className = "rcard-meta";
+        meta.textContent = `#${r.id} · ${fmtDate(r.created_at)} · SA: ${r.creator ? r.creator.username : "—"}`;
+        left.appendChild(meta);
+
+        const title = document.createElement("div");
+        title.className = "rcard-title";
+        const pl = document.createElement("span");
+        pl.className = "plate";
+        pl.textContent = r.vehicle ? r.vehicle.license_plate : "—";
+        title.appendChild(pl);
+        title.appendChild(
+          document.createTextNode(" " + (r.vehicle ? r.vehicle.model : "")),
+        );
+        left.appendChild(title);
+
+        const odo = document.createElement("div");
+        odo.style.cssText =
+          "font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.4rem";
+        odo.textContent = `Odometer: ${Number(r.odometer).toLocaleString("id-ID")} km`;
+        left.appendChild(odo);
+
+        if (r.complaint) {
+          const comp = document.createElement("div");
+          comp.style.cssText = "font-size:.82rem;margin-bottom:.6rem";
+          const lb = document.createElement("strong");
+          lb.textContent = "Keluhan: ";
+          comp.appendChild(lb);
+          comp.appendChild(document.createTextNode(r.complaint));
+          left.appendChild(comp);
+        }
+
+        // Foto awal jika ada
+        if (r.initial_photo) {
+          const imgWrap = document.createElement("div");
+          imgWrap.style.cssText = "margin-bottom:.6rem";
+          const imgLabel = document.createElement("div");
+          imgLabel.style.cssText =
+            "font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.3rem";
+          imgLabel.textContent = "Foto Awal";
+          const img = document.createElement("img");
+          img.src = r.initial_photo;
+          img.style.cssText =
+            "max-height:100px;border-radius:5px;border:1px solid var(--border);object-fit:cover";
+          img.onerror = () => {
+            imgWrap.style.display = "none";
+          };
+          imgWrap.appendChild(imgLabel);
+          imgWrap.appendChild(img);
+          left.appendChild(imgWrap);
+        }
+
+        if (r.report_items && r.report_items.length > 0) {
+          const ilist = document.createElement("div");
+          ilist.className = "rcard-items";
+          let tot = 0;
+          r.report_items.forEach((i) => {
+            const row = document.createElement("div");
+            row.className = "rcard-item-row";
+            const nm = document.createElement("span");
+            nm.textContent = `${i.master_item ? i.master_item.item_name : "—"} × ${i.quantity}`;
+            const pr = document.createElement("span");
+            pr.style.fontFamily = "var(--mono)";
+            const sub = i.price_snapshot * i.quantity;
+            tot += sub;
+            pr.textContent = rp(sub);
+            row.appendChild(nm);
+            row.appendChild(pr);
+            ilist.appendChild(row);
+          });
+          left.appendChild(ilist);
+          const totEl = document.createElement("div");
+          totEl.className = "rcard-total";
+          totEl.textContent = "Total Estimasi: " + rp(tot);
+          left.appendChild(totEl);
+        }
+
+        card.appendChild(left);
+
+        // Right — actions
+        const right = document.createElement("div");
+        right.className = "rcard-actions";
+
+        const st = document.createElement("span");
+        st.className = `status-badge s-${r.status}`;
+        st.textContent = r.status;
+        right.appendChild(st);
+
+        if (mode === "approve") {
+          const btn = document.createElement("button");
+          btn.className = "btn-ok";
+          btn.innerHTML = '<i class="bi bi-check2"></i> Setujui';
+          btn.addEventListener("click", () => doApprove(r.id, btn));
+          right.appendChild(btn);
+        } else if (mode === "complete") {
+          const btn = document.createElement("button");
+          btn.className = "btn-ok";
+          btn.innerHTML = '<i class="bi bi-tools"></i> Selesaikan';
+          btn.addEventListener("click", () => openCompleteModal(r));
+          right.appendChild(btn);
+        }
+
+        card.appendChild(right);
+        return card;
+      }
+
+      async function doApprove(id, btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spin"></span>';
+        try {
+          await api(`/reports/${id}/approve`, { method: "PUT" });
+          toast(`Laporan #${id} berhasil disetujui!`, "success");
+          const card = document.querySelector(`.rcard[data-report-id="${id}"]`);
+          if (card) {
+            card.style.transition = "opacity .25s,transform .25s";
+            card.style.opacity = "0";
+            card.style.transform = "translateX(16px)";
+            setTimeout(() => {
+              card.remove();
+              loadApproval();
+            }, 260);
+          }
+          loadHistory();
+        } catch (e) {
+          toast("Gagal: " + e.message, "error");
+          btn.disabled = false;
+          btn.innerHTML = '<i class="bi bi-check2"></i> Setujui';
+        }
+      }
+
+      // ── Complete modal ──
+      function openCompleteModal(r) {
+        document.getElementById("modal-report-id").value = r.id;
+        document.getElementById("modal-report-info").textContent =
+          `#${r.id} · ${r.vehicle ? r.vehicle.license_plate : "—"} · ${r.vehicle ? r.vehicle.model : ""}`;
+        // reset upload
+        document.getElementById("inp-proof-file").value = "";
+        document.getElementById("preview-proof").style.display = "none";
+        document.getElementById("upload-proof-name").style.display = "none";
+        document
+          .getElementById("upload-zone-proof")
+          .classList.remove("has-file");
+        document.getElementById("modal-complete").classList.add("open");
+      }
+
+      document
+        .getElementById("btn-modal-cancel")
+        .addEventListener("click", () => {
+          document.getElementById("modal-complete").classList.remove("open");
+        });
+
+      document
+        .getElementById("btn-modal-submit")
+        .addEventListener("click", async () => {
+          const id = document.getElementById("modal-report-id").value;
+          const file = document.getElementById("inp-proof-file").files[0];
+          if (!file) {
+            toast("Upload foto bukti pengerjaan terlebih dahulu.", "error");
+            return;
+          }
+
+          const btn = document.getElementById("btn-modal-submit");
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spin"></span> Menyimpan...';
+
+          try {
+            const photoData = await fileToDataURL(file);
+            await api(`/reports/${id}/complete`, {
+              method: "PUT",
+              body: JSON.stringify({ proof_photo: photoData }),
+            });
+            toast(`Laporan #${id} berhasil diselesaikan!`, "success");
+            document.getElementById("modal-complete").classList.remove("open");
+            loadComplete();
+            loadHistory();
+          } catch (e) {
+            toast("Gagal: " + e.message, "error");
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check2"></i> Selesaikan';
+          }
+        });
+
+      // ═══════════════════════════════════════════════════════
+      // DOM HELPERS
+      // ═══════════════════════════════════════════════════════
+      function mkTd(text, cls = "") {
+        const td = document.createElement("td");
+        if (cls) td.className = cls;
+        td.textContent = text;
+        return td;
+      }
+
+      function setLoading(tbody, cols, msg) {
+        tbody.innerHTML = "";
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = cols;
+        td.style.cssText =
+          "text-align:center;padding:2rem;color:var(--muted);font-family:var(--mono);font-size:.78rem";
+        td.textContent = msg;
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      }
+
+      function setEmpty(tbody, cols, msg) {
+        setLoading(tbody, cols, msg);
+      }
+
+      function setError(tbody, cols, msg) {
+        tbody.innerHTML = "";
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = cols;
+        td.style.cssText =
+          "text-align:center;padding:1.5rem;color:#dc2626;font-family:var(--mono);font-size:.75rem";
+        td.textContent = "Error: " + msg;
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      }
+
+      function showListLoading(el, msg) {
+        const d = document.createElement("div");
+        d.className = "empty-state";
+        const i = document.createElement("i");
+        i.className = "bi bi-hourglass-split";
+        const p = document.createElement("p");
+        p.textContent = msg;
+        d.appendChild(i);
+        d.appendChild(p);
+        el.appendChild(d);
+      }
+
+      function showEmpty(el, icon, msg) {
+        const d = document.createElement("div");
+        d.className = "empty-state";
+        const i = document.createElement("i");
+        i.className = `bi ${icon}`;
+        const p = document.createElement("p");
+        p.textContent = msg;
+        d.appendChild(i);
+        d.appendChild(p);
+        el.appendChild(d);
+      }
+
+      function showError(el, msg) {
+        const d = document.createElement("div");
+        d.className = "empty-state";
+        d.style.color = "#dc2626";
+        const i = document.createElement("i");
+        i.className = "bi bi-exclamation-triangle";
+        const p = document.createElement("p");
+        p.textContent = "Error: " + msg;
+        d.appendChild(i);
+        d.appendChild(p);
+        el.appendChild(d);
+      }
+
+      // ═══════════════════════════════════════════════════════
+      // INIT
+      // ═══════════════════════════════════════════════════════
+      loadUsers();
+    </script>
+  </body>
+</html>

@@ -36,8 +36,8 @@ CREATE TABLE maintenance_reports (
         'DONE'
     ) DEFAULT 'PENDING',
 
-    initial_photo VARCHAR(255),
-    proof_photo VARCHAR(255),
+    initial_photo LONGTEXT,
+    proof_photo LONGTEXT,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
