@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fleetify</title>
+    <title>ServisLog</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -715,7 +715,7 @@
   <body>
     <!-- TOPBAR -->
     <header id="topbar">
-      <a class="brand" href="#"><span>Fleetify</span></a>
+      <a class="brand" href="#"><span>Servis</span>Log</a>
       <div id="topbar-right">
         <label for="user-select"
           ><i class="bi bi-person-fill"></i> Login sebagai</label
@@ -769,7 +769,7 @@
       </div>
 
       <div id="sidebar-footer">
-        <p>Fleetify v1.0</p>
+        <p>ServisLog v1.0</p>
       </div>
     </aside>
 
@@ -785,9 +785,14 @@
             class="mono"
             style="font-size: 0.75rem; color: var(--muted)"
           ></span>
-          <button class="btn-outline" id="btn-refresh-history">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
+          <div class="d-flex gap-2">
+            <button class="btn-outline" id="btn-export-csv" disabled>
+              <i class="bi bi-filetype-csv"></i> Export CSV
+            </button>
+            <button class="btn-outline" id="btn-refresh-history">
+              <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+          </div>
         </div>
         <div class="card-box" style="padding: 0; overflow: hidden">
           <div style="overflow-x: auto">
@@ -1027,6 +1032,7 @@
         vehicles: [],
         masterItems: [],
         formItems: [], // [{itemId, qty}]
+        reports: [], // cache untuk export CSV
       };
 
       // ═══════════════════════════════════════════════════════
@@ -1291,10 +1297,13 @@
 
       async function loadHistory() {
         const tbody = document.getElementById("history-tbody");
+        const btnCsv = document.getElementById("btn-export-csv");
+        btnCsv.disabled = true;
         setLoading(tbody, 8, "Memuat data...");
         try {
           const d = await api("/reports");
           const reports = d.data || [];
+          S.reports = reports; // simpan untuk export CSV
           document.getElementById("history-count").textContent =
             `${reports.length} laporan`;
           tbody.innerHTML = "";
@@ -1302,6 +1311,7 @@
             setEmpty(tbody, 8, "Belum ada laporan");
             return;
           }
+          btnCsv.disabled = false; // aktifkan tombol setelah data ada
           const frag = document.createDocumentFragment();
           reports.forEach((r) => {
             const tr = document.createElement("tr");
@@ -1352,8 +1362,6 @@
               })(),
               // Tanggal
               mkTd(fmtDate(r.created_at), "mono"),
-
-              // Foto
               // Foto Awal
               (() => {
                 const td = document.createElement("td");
@@ -1918,6 +1926,98 @@
         d.appendChild(p);
         el.appendChild(d);
       }
+
+      // ═══════════════════════════════════════════════════════
+      // B-01: EXPORT CSV — Native JS, tanpa library
+      // ═══════════════════════════════════════════════════════
+
+      // Escape nilai sel agar aman di CSV:
+      // - Bungkus dengan tanda kutip ganda jika mengandung koma, kutip, atau newline
+      // - Ganda-kan tanda kutip di dalam nilai
+      function csvEscape(val) {
+        const str = val === null || val === undefined ? "" : String(val);
+        if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+          return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      }
+
+      // Bangun baris CSV dari array nilai
+      function csvRow(cols) {
+        return cols.map(csvEscape).join(",");
+      }
+
+      function exportCSV() {
+        if (!S.reports || S.reports.length === 0) {
+          toast("Tidak ada data untuk diekspor.", "error");
+          return;
+        }
+
+        // ── Header kolom ──────────────────────────────────────
+        const headers = [
+          "ID",
+          "Nama SA",
+          "No. Polisi",
+          "Model Kendaraan",
+          "Odometer (km)",
+          "Keluhan",
+          "Jumlah Item",
+          "Total Estimasi (Rp)",
+          "Status",
+          "Tanggal Dibuat",
+        ];
+
+        // ── Baris data ────────────────────────────────────────
+        const rows = S.reports.map((r) => {
+          const total = (r.report_items || []).reduce(
+            (sum, i) => sum + i.price_snapshot * i.quantity,
+            0,
+          );
+
+          return csvRow([
+            r.id,
+            r.creator ? r.creator.username : "",
+            r.vehicle ? r.vehicle.license_plate : "",
+            r.vehicle ? r.vehicle.model : "",
+            r.odometer,
+            r.complaint || "",
+            (r.report_items || []).length,
+            total,
+            r.status,
+            r.created_at ? new Date(r.created_at).toLocaleString("id-ID") : "",
+          ]);
+        });
+
+        // ── Gabungkan header + baris ──────────────────────────
+        // Tambahkan BOM (Byte Order Mark) \uFEFF agar Excel membaca UTF-8 dengan benar
+        const csvContent = "\uFEFF" + [csvRow(headers), ...rows].join("\r\n");
+
+        // ── Buat Blob dan trigger download ───────────────────
+        const blob = new Blob([csvContent], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `riwayat-laporan-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup — hapus elemen dan bebaskan object URL dari memori
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        toast(
+          `${S.reports.length} laporan berhasil diekspor ke CSV.`,
+          "success",
+        );
+      }
+
+      document
+        .getElementById("btn-export-csv")
+        .addEventListener("click", exportCSV);
 
       // ═══════════════════════════════════════════════════════
       // INIT
